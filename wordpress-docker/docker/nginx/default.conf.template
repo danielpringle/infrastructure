@@ -1,0 +1,47 @@
+# Redirect all HTTP traffic to HTTPS.
+server {
+    listen 80;
+    server_name ${DOMAIN};
+
+    return 301 https://${DOMAIN}$request_uri;
+}
+
+# Main WordPress virtual host.
+server {
+    listen 443 ssl;
+    server_name ${DOMAIN};
+
+    # Local development SSL certificates.
+    ssl_certificate     /etc/nginx/ssl/${DOMAIN}.crt;
+    ssl_certificate_key /etc/nginx/ssl/${DOMAIN}.key;
+
+    root /var/www/html;
+    index index.php index.html;
+
+    # Pass the original host and protocol information to PHP.
+    # This is important when WordPress is running behind HTTPS.
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # Send PHP requests to the PHP-FPM container.
+    location ~ \.php$ {
+        try_files $uri =404;
+
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS on;
+
+        fastcgi_pass php:9000;
+    }
+
+    # Don't expose hidden files such as .env or .git.
+    location ~ /\. {
+        deny all;
+    }
+
+    # Prevent access to sensitive WordPress files.
+    location ~* /(wp-config\.php|\.htaccess) {
+        deny all;
+    }
+}

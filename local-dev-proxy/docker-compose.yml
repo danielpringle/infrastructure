@@ -1,0 +1,32 @@
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+
+    # Shared local reverse proxy for all Docker development projects.
+    container_name: dpuk-local-proxy
+    restart: unless-stopped
+
+    # The proxy is the only local development service that binds
+    # to the host's HTTP/HTTPS ports.
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # Local TLS certificates generated with mkcert.
+    # Certificates are read-only inside the container.
+    volumes:
+      - ./certs:/etc/nginx/ssl:ro
+
+    # Allows the proxy to route requests to project containers
+    # that are connected to the same shared network.
+    networks:
+      - proxy
+
+networks:
+  # Shared network used by the proxy and participating projects.
+  # Individual projects can remain on their own private networks
+  # while also joining this network when proxy access is required.
+  proxy:
+    name: dpuk-proxy
+    driver: bridge

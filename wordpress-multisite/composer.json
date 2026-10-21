@@ -1,0 +1,8 @@
+{
+	"name": "dpuk/wordpress-docker",
+	"description": "Reusable Docker development environment for WordPress.",
+	"type": "project",
+	"require": {
+		"johnpbloch/wordpress": "^6.8"
+	}
+}

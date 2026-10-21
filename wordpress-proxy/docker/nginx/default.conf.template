@@ -1,0 +1,38 @@
+# Internal HTTP virtual host.
+# HTTPS is terminated by the shared local reverse proxy.
+server {
+    listen 80;
+    server_name ${DOMAIN};
+
+    root /var/www/html;
+    index index.php index.html;
+
+    # Pass requests through to WordPress.
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # Send PHP requests to the PHP-FPM container.
+    location ~ \.php$ {
+        try_files $uri =404;
+
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        # Tell WordPress the original request was HTTPS.
+        fastcgi_param HTTPS on;
+        fastcgi_param HTTP_X_FORWARDED_PROTO https;
+
+        fastcgi_pass php:9000;
+    }
+
+    # Don't expose hidden files such as .env or .git.
+    location ~ /\. {
+        deny all;
+    }
+
+    # Prevent access to sensitive WordPress files.
+    location ~* /(wp-config\.php|\.htaccess) {
+        deny all;
+    }
+}

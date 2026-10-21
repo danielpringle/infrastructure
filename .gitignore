@@ -1,0 +1,38 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Docker runtime data
+dbdata/
+mysql/
+docker-data/
+data/
+
+# Local SSL certificates
+certs/
+*.pem
+*.key
+*.crt
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+/local-dev-proxy/docker/nginx/conf.d/*
+!/local-dev-proxy/docker/nginx/conf.d/sandbox.conf
+!/local-dev-proxy/docker/nginx/conf.d/multisite.conf
+!/local-dev-proxy/docker/nginx/conf.d/testproxysite.conf

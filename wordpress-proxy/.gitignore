@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# WordPress installation
+/app/*
+
+# Keep the app directory itself
+!/app/.gitkeep
+
+# Local SSL certificates
+/docker/nginx/ssl/
+
+# MySQL data
+/dbdata/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
